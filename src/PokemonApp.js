@@ -1,55 +1,117 @@
-import React, { useState } from 'react';
-import pokemonService from './services/pokemon';
-import PokemonCard from './components/PokemonCard';
-
+import React, { Component } from 'react';
+import PokemonsList from './components/PokemonsList';
 import PokemonNameSearchBox from './components/PokemonNameSearchBox';
+import ErrorHandlingComponent from './components/ErrorHandlingComponent';
 
-function PokemonApp() {
-  const [pokemons, setPokemons] = useState([]);
-  const [isSearchInProgress, setSearchInProgress] = useState(false);
-  const [searchPokemonName, setSearchPokemonName] = useState('');
+import pokemonService from './services/pokemon';
 
-  const searchPokemon = pokemonName => {
-    console.log('Pokemon App: name Returned from the searchBox: ', pokemonName);
-    setSearchInProgress(true);
-    setTimeout(() => {
-      if (pokemonName.length < 2) {
-        console.log('Pokemon App: Reseting searchPokemonName');
-        setSearchPokemonName('');
-      }
-
-      setSearchInProgress(false);
-    }, 3000);
+class PokemonApp extends Component {
+  state = {
+    pokemonCards: [],
+    isSearchInProgress: false,
+    currentSearchPokemonName: '',
+    hasErrorOccured: false,
+    error: {}
   };
 
-  const renderSearchBox = key => {
-    console.log(
-      'Pokemon App: Rendering Search Box with searchPokemonName as: ',
-      searchPokemonName
-    );
+  handlePokemonCardOnClick = pokemonCardId => {
+    console.log(pokemonCardId);
+  };
 
+  handleChangePokemonName = pokemonName => {
+    this.setState({
+      currentSearchPokemonName: pokemonName
+    });
+  };
+
+  handleSearchPokemon = () => {
+    const _handleError = error => {
+      this.setState(
+        {
+          hasErrorOccured: true,
+          error
+        },
+        () => {
+          setTimeout(() => {
+            this.setState({
+              hasErrorOccured: false,
+              error: {}
+            });
+          }, 1500);
+        }
+      );
+    };
+
+    this.setState({ isSearchInProgress: true }, () => {
+      pokemonService
+        .getPokemonCardsByName(this.state.currentSearchPokemonName)
+        .then(cards => {
+          if (cards.length === 0) {
+            console.log('error occured');
+            let error = new Error('No pokemons found');
+            _handleError(error);
+          } else
+            this.setState({
+              pokemonCards: cards
+            });
+        })
+        .catch(error => {
+          _handleError(error);
+        })
+        .finally(() => {
+          this.setState({
+            isSearchInProgress: false
+          });
+        });
+    });
+  };
+
+  renderErrorHandlingComponent = key => {
     return (
-      <PokemonNameSearchBox
+      <ErrorHandlingComponent
+        hasErrorOccured={this.state.hasErrorOccured}
+        error={this.state.error}
         key={key}
-        searchPokemonName={searchPokemonName}
-        isDisabled={isSearchInProgress}
-        searchPokemon={searchPokemon}
       />
     );
   };
 
-  const renderBottom = key => {
-    if (pokemons.length === 0)
-      return <div key={key}>Search for your favourite Pokemon</div>;
-    else
-      return pokemons.forEach(pokemon => {
-        return <PokemonCard pokemon={pokemon} />;
-      });
+  renderSearchBox = key => {
+    return (
+      <PokemonNameSearchBox
+        key={key}
+        currentSearchPokemonName={this.state.currentSearchPokemonName}
+        isDisabled={this.state.isSearchInProgress}
+        searchPokemon={this.handleSearchPokemon}
+        changePokemonName={this.handleChangePokemonName}
+      />
+    );
   };
 
-  return (
-    <div className="PokemonApp">{[renderSearchBox(1), renderBottom(2)]}</div>
-  );
+  renderBottom = key => {
+    if (this.state.pokemonCards.length === 0)
+      return <div key={key}>Search for your favourite Pokemon</div>;
+    else
+      return (
+        <PokemonsList
+          pokemonCards={this.state.pokemonCards}
+          onPokemonCardClick={this.handlePokemonCardOnClick}
+          key={key}
+        />
+      );
+  };
+
+  render() {
+    return (
+      <div className="PokemonApp">
+        {[
+          this.renderErrorHandlingComponent(1),
+          this.renderSearchBox(2),
+          this.renderBottom(3)
+        ]}
+      </div>
+    );
+  }
 }
 
 export default PokemonApp;

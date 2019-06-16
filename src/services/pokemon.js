@@ -2,6 +2,7 @@ import api from '../api';
 
 export default {
   getPokemonCardsByName: name =>
-    fetch.get(api + `cards?name=${name}`).then(response => response.json())
-      .cards
+    fetch(api + `cards?name="${name}"`)
+      .then(response => response.json())
+      .then(jsonResponse => jsonResponse.cards)
 };
