@@ -1,15 +1,15 @@
 import React from 'react';
+import { Spring } from 'react-spring/renderprops';
 
 export default function ErrorHandlingComponent({ hasErrorOccured, error }) {
   return (
-    <div>
-      {hasErrorOccured && (
-        <div style={styles.root}>
-          Error occured
-          <div>{error.message}</div>
+    <Spring from={{ opacity: 0 }} to={{ opacity: 1 }}>
+      {props => (
+        <div style={props}>
+          <div>Error occured</div>
         </div>
       )}
-    </div>
+    </Spring>
   );
 }
 

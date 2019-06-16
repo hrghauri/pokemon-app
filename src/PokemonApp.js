@@ -48,7 +48,7 @@ class PokemonApp extends Component {
         .then(cards => {
           if (cards.length === 0) {
             console.log('error occured');
-            let error = new Error('No pokemons found');
+            let error = new Error('No pokemons found by this name');
             _handleError(error);
           } else
             this.setState({
