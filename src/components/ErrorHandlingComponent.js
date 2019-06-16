@@ -3,13 +3,24 @@ import { Spring } from 'react-spring/renderprops';
 
 export default function ErrorHandlingComponent({ hasErrorOccured, error }) {
   return (
-    <Spring from={{ opacity: 0 }} to={{ opacity: 1 }}>
-      {props => (
-        <div style={props}>
-          <div>Error occured</div>
-        </div>
+    <div>
+      {hasErrorOccured && (
+        <Spring
+          from={{ opacity: 0 }}
+          to={{ opacity: 1 }}
+          config={{ duration: 1500 }}
+        >
+          {props => (
+            <div style={props}>
+              <div style={styles.root}>
+                <div>Error Occured.</div>
+                <div>{error.message}</div>
+              </div>
+            </div>
+          )}
+        </Spring>
       )}
-    </Spring>
+    </div>
   );
 }
 

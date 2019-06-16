@@ -37,7 +37,7 @@ class PokemonApp extends Component {
               hasErrorOccured: false,
               error: {}
             });
-          }, 1500);
+          }, 2500);
         }
       );
     };
@@ -47,8 +47,7 @@ class PokemonApp extends Component {
         .getPokemonCardsByName(this.state.currentSearchPokemonName)
         .then(cards => {
           if (cards.length === 0) {
-            console.log('error occured');
-            let error = new Error('No pokemons found by this name');
+            let error = new Error('No pokemons found by this name.');
             _handleError(error);
           } else
             this.setState({
