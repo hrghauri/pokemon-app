@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import PokemonsList from './components/PokemonsList';
-import PokemonNameSearchBox from './components/PokemonNameSearchBox';
 import ErrorHandlingComponent from './components/ErrorHandlingComponent';
+import PokemonNameSearchBox from './components/PokemonNameSearchBox';
+import PokemonsList from './components/PokemonsList';
+import PokemonPopup from './components/PokemonPopup';
 
 import pokemonService from './services/pokemon';
 
@@ -11,11 +12,23 @@ class PokemonApp extends Component {
     isSearchInProgress: false,
     currentSearchPokemonName: '',
     hasErrorOccured: false,
-    error: {}
+    error: {},
+    currentClickedPokemonCardId: '',
+    isPopupOpen: false
   };
 
   handlePokemonCardOnClick = pokemonCardId => {
-    console.log(pokemonCardId);
+    this.setState({
+      currentClickedPokemonCardId: pokemonCardId,
+      isPopupOpen: true
+    });
+  };
+
+  handlePopupClose = () => {
+    this.setState({
+      currentClickedPokemonCardId: '',
+      isPopupOpen: false
+    });
   };
 
   handleChangePokemonName = pokemonName => {
@@ -100,13 +113,31 @@ class PokemonApp extends Component {
       );
   };
 
+  renderPopUpIfNeccessary = key => {
+    if (this.state.isPopupOpen) {
+      const [currentPokemonCard] = this.state.pokemonCards.filter(
+        pokemonCard => this.state.currentClickedPokemonCardId === pokemonCard.id
+      );
+
+      return (
+        <PokemonPopup
+          handlePopUpClose={this.handlePopupClose}
+          pokemonCard={currentPokemonCard}
+          key={key}
+          open={true}
+        />
+      );
+    } else return null;
+  };
+
   render() {
     return (
       <div className="PokemonApp">
         {[
           this.renderErrorHandlingComponent(1),
           this.renderSearchBox(2),
-          this.renderBottom(3)
+          this.renderBottom(3),
+          this.renderPopUpIfNeccessary(4)
         ]}
       </div>
     );
