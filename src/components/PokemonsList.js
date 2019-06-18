@@ -6,12 +6,13 @@ export default class PokemonsList extends Component {
   state = {
     maxPageSize: 10,
     currentPage: 0,
-    filteredPokemonCardsList: this.props.pokemonCards.slice(),
-    filters: {}
+    filteredPokemonCardsList: this.props.pokemonCards,
+    filters: {},
+    filtersOpen: []
   };
 
   componentDidMount = () => {
-    if (this.state.filteredPokemonCardsList.length > 0)
+    if (this.props.pokemonCards.length > 0)
       this.setState({
         currentPage: 1
       });
@@ -32,6 +33,21 @@ export default class PokemonsList extends Component {
       currentPage: pageNum
     });
   };
+
+  handleResetFilters = () => {
+    if (this.props.pokemonCards.length > 0) {
+      this.setState({
+        currentPage: 1,
+        filteredPokemonCardsList: this.props.pokemonCards,
+        filters: {},
+        filtersOpen: []
+      });
+    }
+  };
+
+  renderTypesFilter = () => {};
+
+  renderSetFilter = () => {};
 
   renderPokemonCardsList = key => {
     const visiblePokemonCardsList = [];

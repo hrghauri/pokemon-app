@@ -23,9 +23,23 @@ export default function ListFooter({ numOfPages, currentPage, onPageSelect }) {
     onPageSelect(optionValue);
   };
 
+  const onPreviousClick = () => {
+    const previousPage = currentPage - 1;
+    onPageSelect(previousPage);
+  };
+
+  const onNextClick = () => {
+    const nextPage = currentPage + 1;
+    onPageSelect(nextPage);
+  };
+
   return (
     <div>
-      {currentPage !== 1 && <Button variant="contained">Previous</Button>}
+      {currentPage !== 1 && (
+        <Button variant="contained" onClick={onPreviousClick}>
+          Previous
+        </Button>
+      )}
       {currentPage === 1 && (
         <Button variant="contained" color="secondary" disabled>
           Previous
@@ -34,7 +48,11 @@ export default function ListFooter({ numOfPages, currentPage, onPageSelect }) {
       <NativeSelect value={currentPage} onChange={optionsSelect}>
         {renderOtherPageOptions()}
       </NativeSelect>
-      {currentPage !== numOfPages && <Button variant="contained">Next</Button>}
+      {currentPage !== numOfPages && (
+        <Button variant="contained" onClick={onNextClick}>
+          Next
+        </Button>
+      )}
       {currentPage === numOfPages && (
         <Button variant="contained" color="secondary" disabled>
           Next
