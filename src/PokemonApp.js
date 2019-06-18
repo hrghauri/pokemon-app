@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
+
+import pokemonService from './services/pokemon';
+
 import ErrorHandlingComponent from './components/ErrorHandlingComponent';
 import PokemonNameSearchBox from './components/PokemonNameSearchBox';
 import PokemonsList from './components/PokemonsList';
 import PokemonPopup from './components/PokemonPopup';
-
-import pokemonService from './services/pokemon';
 
 class PokemonApp extends Component {
   state = {
@@ -62,10 +63,12 @@ class PokemonApp extends Component {
           if (cards.length === 0) {
             let error = new Error('No pokemons found by this name.');
             _handleError(error);
-          } else
+          } else {
+            console.log('Pokemon App: I am setting the state');
             this.setState({
               pokemonCards: cards
             });
+          }
         })
         .catch(error => {
           _handleError(error);
@@ -101,6 +104,8 @@ class PokemonApp extends Component {
   };
 
   renderBottom = key => {
+    console.log('Pokemon App: Rendered Bottom');
+
     if (this.state.pokemonCards.length === 0)
       return <div key={key}>Search for your favourite Pokemon</div>;
     else
@@ -132,7 +137,7 @@ class PokemonApp extends Component {
 
   render() {
     return (
-      <div className="PokemonApp">
+      <div className="pokemon-app">
         {[
           this.renderErrorHandlingComponent(1),
           this.renderSearchBox(2),
