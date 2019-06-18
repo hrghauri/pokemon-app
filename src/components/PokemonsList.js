@@ -6,16 +6,45 @@ export default class PokemonsList extends Component {
   state = {
     maxPageSize: 10,
     currentPage: 0,
-    filteredPokemonCardsList: this.props.pokemonCards,
+    filteredPokemonCardsList: [],
     filters: {},
     filtersOpen: []
   };
 
   componentDidMount = () => {
-    if (this.props.pokemonCards.length > 0)
+    this._reset();
+  };
+
+  _reset = () => {
+    if (this.props.pokemonCards.length > 0) {
+      const typesFilter = this.props.pokemonCards.reduce(
+        (acc, currentPokemonCard) => {
+          if (currentPokemonCard.types)
+            currentPokemonCard.types.forEach(type => {
+              acc[type] = false;
+            });
+          return acc;
+        },
+        {}
+      );
+
+      const setsFilter = this.props.pokemonCards.reduce(
+        (acc, currentPokemonCard) => {
+          if (currentPokemonCard.set) acc[currentPokemonCard.set] = false;
+          return acc;
+        },
+        {}
+      );
+
       this.setState({
-        currentPage: 1
+        currentPage: 1,
+        filteredPokemonCardsList: this.props.pokemonCards,
+        filters: {
+          typesFilter,
+          setsFilter
+        }
       });
+    }
   };
 
   _getNumberOfPages = dataLength => {
@@ -28,6 +57,19 @@ export default class PokemonsList extends Component {
     else return quotient + 1;
   };
 
+  _applyTypesFilter = (filter, pokemonCardsList) => {};
+
+  _applySetsFilter = (filter, pokemonCardsList) => {};
+
+  _applyFilterAndReturnFilteredList = filter => {
+    const typesFilteredList = this._applyTypesFilter(
+      filter,
+      this.state.filteredPokemonCardsList
+    );
+    const setsFilterList = this._applySetsFilter(filter, typesFilteredList);
+    return setsFilterList;
+  };
+
   handlePageSelect = pageNum => {
     this.setState({
       currentPage: pageNum
@@ -35,19 +77,34 @@ export default class PokemonsList extends Component {
   };
 
   handleResetFilters = () => {
-    if (this.props.pokemonCards.length > 0) {
-      this.setState({
-        currentPage: 1,
-        filteredPokemonCardsList: this.props.pokemonCards,
-        filters: {},
-        filtersOpen: []
-      });
-    }
+    this._reset();
   };
 
-  renderTypesFilter = () => {};
+  handleFilter = (filterName, filterType, filterValue) => {
+    const filters = this.state.filters;
+    filters[filterName][filterType] = filterValue;
 
-  renderSetFilter = () => {};
+    const newfilteredPokemonCardsList = this._applyFilterAndReturnFilteredList(
+      filters
+    );
+
+    this.setState({
+      filters,
+      filteredPokemonCardsList: newfilteredPokemonCardsList
+    });
+  };
+
+  renderTypesFilter = key => {
+    return <div key={key} />;
+  };
+
+  renderSetsFilter = key => {
+    return <div key={key} />;
+  };
+
+  renderResetFilter = key => {
+    return <div key={key} />;
+  };
 
   renderPokemonCardsList = key => {
     const visiblePokemonCardsList = [];
@@ -93,7 +150,13 @@ export default class PokemonsList extends Component {
   render() {
     return (
       <div className="pokemon-cards-list">
-        {[this.renderPokemonCardsList(0), this.renderListFooter(1)]}
+        {[
+          this.renderSetsFilter(0),
+          this.renderTypesFilter(1),
+          this.renderResetFilter(2),
+          this.renderPokemonCardsList(3),
+          this.renderListFooter(4)
+        ]}
       </div>
     );
   }
