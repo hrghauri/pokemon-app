@@ -1,21 +1,17 @@
 import React, { Component } from 'react';
 import PokemonCard from './PokemonCard';
 import ListFooter from './ListFooter';
+import FilteringComponent from './FilteringComponent';
+import Button from '@material-ui/core/Button';
 
 export default class PokemonsList extends Component {
-  state = {
-    maxPageSize: 10,
-    currentPage: 0,
-    filteredPokemonCardsList: [],
-    filters: {},
-    filtersOpen: []
-  };
+  constructor(props) {
+    super(props);
+    const possibleNewState = this._getResetState();
+    this.state = { maxPageSize: 10, ...possibleNewState };
+  }
 
-  componentDidMount = () => {
-    this._reset();
-  };
-
-  _reset = () => {
+  _getResetState = () => {
     if (this.props.pokemonCards.length > 0) {
       const typesFilter = this.props.pokemonCards.reduce(
         (acc, currentPokemonCard) => {
@@ -27,7 +23,6 @@ export default class PokemonsList extends Component {
         },
         {}
       );
-
       const setsFilter = this.props.pokemonCards.reduce(
         (acc, currentPokemonCard) => {
           if (currentPokemonCard.set) acc[currentPokemonCard.set] = false;
@@ -36,15 +31,28 @@ export default class PokemonsList extends Component {
         {}
       );
 
-      this.setState({
+      return {
         currentPage: 1,
         filteredPokemonCardsList: this.props.pokemonCards,
         filters: {
           typesFilter,
           setsFilter
-        }
-      });
-    }
+        },
+        filtersOpen: [],
+        anchorEL: {}
+      };
+    } else
+      return {
+        currentPage: 0,
+        filteredPokemonCardsList: [],
+        filters: {},
+        filtersOpen: [],
+        anchorEL: {}
+      };
+  };
+
+  _reset = () => {
+    this.setState(this._getResetState());
   };
 
   _getNumberOfPages = dataLength => {
@@ -57,9 +65,65 @@ export default class PokemonsList extends Component {
     else return quotient + 1;
   };
 
-  _applyTypesFilter = (filter, pokemonCardsList) => {};
+  _applyTypesFilter = (filter, pokemonCardsList) => {
+    const allTypeFilterKeys = Object.keys(filter.typesFilter);
+    const allAppliedTypeFilters = allTypeFilterKeys.reduce(
+      (acc, currentTypeFilterKey) => {
+        const currentFilterValue = filter.typesFilter[currentTypeFilterKey];
+        if (currentFilterValue === true) {
+          acc.push(currentTypeFilterKey);
+        }
+        return acc;
+      },
+      []
+    );
 
-  _applySetsFilter = (filter, pokemonCardsList) => {};
+    if (allAppliedTypeFilters.length === 0) return pokemonCardsList;
+    else {
+      const newfilteredPokemonCardsList = pokemonCardsList.reduce(
+        (acc, currentPokemonCard) => {
+          const currentPokemonCardTypes = currentPokemonCard.types;
+          for (let i = 0; i < currentPokemonCardTypes.length; i++) {
+            if (allAppliedTypeFilters.includes(currentPokemonCardTypes)) {
+              acc.push(currentPokemonCard);
+              break;
+            }
+          }
+          return acc;
+        },
+        []
+      );
+      return newfilteredPokemonCardsList;
+    }
+  };
+
+  _applySetsFilter = (filter, pokemonCardsList) => {
+    const allSetFilterKeys = Object.keys(filter.setsFilter);
+    const allAppliedSetFilters = allSetFilterKeys.reduce(
+      (acc, currentSetFilterKey) => {
+        const currentFilterValue = filter.typesFilter[currentSetFilterKey];
+        if (currentFilterValue === true) {
+          acc.push(currentSetFilterKey);
+        }
+        return acc;
+      },
+      []
+    );
+
+    if (allAppliedSetFilters.length === 0) return pokemonCardsList;
+    else {
+      const newfilteredPokemonCardsList = pokemonCardsList.reduce(
+        (acc, currentPokemonCard) => {
+          const currentPokemonCardSet = currentPokemonCard.set;
+          if (allAppliedSetFilters.includes(currentPokemonCardSet))
+            acc.push(currentPokemonCard);
+          return acc;
+        },
+        []
+      );
+      return newfilteredPokemonCardsList;
+    }
+  };
 
   _applyFilterAndReturnFilteredList = filter => {
     const typesFilteredList = this._applyTypesFilter(
@@ -94,12 +158,114 @@ export default class PokemonsList extends Component {
     });
   };
 
+  handleFilterClose = filterName => {
+    const index = this.state.filtersOpen.indexOf(filterName);
+    if (index !== -1) {
+      this.state.filtersOpen.splice(index, 1);
+      this.setState({
+        filtersOpen: this.state.filtersOpen
+      });
+    }
+  };
+
+  handleFilterOpen = (filterName, e) => {
+    const newFiltersOpen = this.state.filtersOpen;
+    newFiltersOpen.push(filterName);
+    const anchorEL = e.currentTarget;
+
+    this.setState({
+      filtersOpen: newFiltersOpen,
+      anchorEL
+    });
+  };
+
   renderTypesFilter = key => {
-    return <div key={key} />;
+    const allTypeFilterKeys = Object.keys(this.state.filters.typesFilter);
+    const allAppliedTypeFilters = allTypeFilterKeys.reduce(
+      (acc, currentTypeFilterKey) => {
+        const currentFilterValue = this.state.filters.typesFilter[
+          currentTypeFilterKey
+        ];
+        if (currentFilterValue === true) {
+          acc.push(currentTypeFilterKey);
+        }
+        return acc;
+      },
+      []
+    );
+
+    if (this.state.filtersOpen.includes('type')) {
+      return (
+        <React.Fragment key={key}>
+          <FilteringComponent
+            filterName={'type'}
+            allFilteringValues={Object.keys(this.state.filters.typesFilter)}
+            selectedFilteringValues={allAppliedTypeFilters}
+            onFilterValueSelection={this.handleFilter}
+            onFilterClose={this.handleFilterClose}
+            open={true}
+            anchorEL={this.state.anchorEL}
+          />
+
+          <Button key={key} variant="contained" disabled>
+            Type Filter
+          </Button>
+        </React.Fragment>
+      );
+    } else
+      return (
+        <Button
+          key={key}
+          variant="contained"
+          onClick={e => this.handleFilterOpen('type', e)}
+        >
+          Type Filter
+        </Button>
+      );
   };
 
   renderSetsFilter = key => {
-    return <div key={key} />;
+    const allSetFilterKeys = Object.keys(this.state.filters.setsFilter);
+    const allAppliedSetFilters = allSetFilterKeys.reduce(
+      (acc, currentSetFilterKey) => {
+        const currentFilterValue = this.state.filters.typesFilter[
+          currentSetFilterKey
+        ];
+        if (currentFilterValue === true) {
+          acc.push(currentSetFilterKey);
+        }
+        return acc;
+      },
+      []
+    );
+
+    if (this.state.filtersOpen.includes('set')) {
+      return (
+        <React.Fragment key={key}>
+          <FilteringComponent
+            filterName={'set'}
+            allFilteringValues={Object.keys(this.state.filters.setsFilter)}
+            selectedFilteringValues={allAppliedSetFilters}
+            onFilterValueSelection={this.handleFilter}
+            onFilterClose={this.handleFilterClose}
+            open={true}
+            anchorEL={this.state.anchorEL}
+          />
+          <Button key={key} variant="contained" disabled>
+            Set Filter
+          </Button>
+        </React.Fragment>
+      );
+    } else
+      return (
+        <Button
+          key={key}
+          variant="contained"
+          onClick={e => this.handleFilterOpen('set', e)}
+        >
+          Set Filter
+        </Button>
+      );
   };
 
   renderResetFilter = key => {
