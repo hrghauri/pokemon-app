@@ -17,12 +17,6 @@ export default class PokemonsList extends Component {
       });
   };
 
-  handlePageSelect = pageNum => {
-    this.setState({
-      currentPage: pageNum
-    });
-  };
-
   _getNumberOfPages = dataLength => {
     if (dataLength === 0) return 0;
 
@@ -31,6 +25,12 @@ export default class PokemonsList extends Component {
 
     if (remainder === 0) return quotient;
     else return quotient + 1;
+  };
+
+  handlePageSelect = pageNum => {
+    this.setState({
+      currentPage: pageNum
+    });
   };
 
   renderPokemonCardsList = key => {
