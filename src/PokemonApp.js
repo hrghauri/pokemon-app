@@ -15,7 +15,8 @@ class PokemonApp extends Component {
     hasErrorOccured: false,
     error: {},
     currentClickedPokemonCardId: '',
-    isPopupOpen: false
+    isPopupOpen: false,
+    searchedPokemonTimesNegative: 0 // a Hack to  make sure to completely rerender PokemonList once a search is performed again
   };
 
   handlePokemonCardOnClick = pokemonCardId => {
@@ -64,7 +65,6 @@ class PokemonApp extends Component {
             let error = new Error('No pokemons found by this name.');
             _handleError(error);
           } else {
-            console.log('Pokemon App: I am setting the state');
             this.setState({
               pokemonCards: cards
             });
@@ -74,8 +74,11 @@ class PokemonApp extends Component {
           _handleError(error);
         })
         .finally(() => {
+          const searchedPokemonTimesNegative =
+            this.state.searchedPokemonTimesNegative - 1; // a Hack
           this.setState({
-            isSearchInProgress: false
+            isSearchInProgress: false,
+            searchedPokemonTimesNegative
           });
         });
     });
@@ -104,8 +107,6 @@ class PokemonApp extends Component {
   };
 
   renderBottom = key => {
-    console.log('Pokemon App: Rendered Bottom');
-
     if (this.state.pokemonCards.length === 0)
       return <div key={key}>Search for your favourite Pokemon</div>;
     else
@@ -113,7 +114,7 @@ class PokemonApp extends Component {
         <PokemonsList
           pokemonCards={this.state.pokemonCards}
           onPokemonCardClick={this.handlePokemonCardOnClick}
-          key={key}
+          key={this.state.searchedPokemonTimesNegative} // a Hack
         />
       );
   };

@@ -11,12 +11,6 @@ export default class PokemonsList extends Component {
   };
 
   componentDidMount = () => {
-    // const filteredPokemonCardsList = this.props.pokemonCards.slice();
-    // console.log(
-    //   'Pokemon List: Filtered Length',
-    //   filteredPokemonCardsList.length
-    // );
-
     if (this.state.filteredPokemonCardsList.length > 0)
       this.setState({
         currentPage: 1
@@ -35,16 +29,11 @@ export default class PokemonsList extends Component {
     const remainder = dataLength % this.state.maxPageSize;
     const quotient = Math.floor(dataLength / this.state.maxPageSize);
 
-    console.log('remainder', remainder);
-    console.log('quot', quotient);
-
     if (remainder === 0) return quotient;
     else return quotient + 1;
   };
 
   renderPokemonCardsList = key => {
-    console.log('Pokemon List: Rendering Pokemon Cards List');
-
     const visiblePokemonCardsList = [];
     const startingIndexInclusive =
       (this.state.currentPage - 1) * this.state.maxPageSize;
