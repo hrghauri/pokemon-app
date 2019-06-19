@@ -1,7 +1,7 @@
 # Updated By Haris Ghauri
 
 ## About and Some Preferences
-This application allows the user to fetch multiple or single pokemon cards by entering the pokemon's name. The name must be an exact match. However, Pokemon.js file inside src/services does contain an api endpoint that will return the pokemon cards with partial matches. To use this, just change the service call from 'getPokemonCardsByExactName' to 'getPokemonCardsByName' on line 67 of PokemonApp.js inside src.
+This application allows the user to fetch multiple or single pokemon cards by entering the pokemon's name. The name can be an exact match or a partial match. However, Pokemon.js file inside src/services does contain an api endpoint that can return the pokemon cards with exact matches. To use this, just change the service call from 'getPokemonCardsByName' to 'getPokemonCardsByExactName' on line 67 of PokemonApp.js inside src.
 
 
 ## Deployment Link
