@@ -1,3 +1,21 @@
+### Updated By Haris Ghauri
+
+## About and Some Preferences
+This application allows the user to fetch multiple or single pokemon cards by entering the pokemon's name. The name must be an exact match. However, Pokemon.js file inside src/services does contain an api endpoint that will return the pokemon cards with partial matches. To use this, just change the service call from 'getPokemonCardsByExactName' to 'getPokemonCardsByName' on line 67 of PokemonApp.js inside src.
+
+
+## Deployment Link
+https://hrghauri.github.io/pokemon-app/
+
+## Technologies used
+-Node 8.15.1
+-NPM 6.4.1
+-create-react-app
+
+
+
+
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
