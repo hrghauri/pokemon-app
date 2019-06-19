@@ -5,9 +5,11 @@ import CardMedia from '@material-ui/core/CardMedia';
 
 export default function PokemonCard({ pokemonCard, onPokemonCardClick }) {
   return (
-    <img
-      src={pokemonCard.imageUrl}
-      onClick={() => onPokemonCardClick(pokemonCard.id)}
-    />
+    <div className="pokemon-Card">
+      <img
+        src={pokemonCard.imageUrl}
+        onClick={() => onPokemonCardClick(pokemonCard.id)}
+      />
+    </div>
   );
 }

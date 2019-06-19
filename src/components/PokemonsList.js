@@ -8,7 +8,7 @@ export default class PokemonsList extends Component {
   constructor(props) {
     super(props);
     const possibleNewState = this._getResetState();
-    this.state = { maxPageSize: 10, ...possibleNewState };
+    this.state = { maxPageSize: 8, ...possibleNewState };
   }
 
   _getResetState = () => {
@@ -159,7 +159,6 @@ export default class PokemonsList extends Component {
   };
 
   handleFilter = (filterName, filterType, filterValue) => {
-    console.log('PokemonList: handleFilter');
     const filters = this.state.filters;
     filters[filterName + 'sFilter'][filterType] = filterValue;
 
@@ -300,15 +299,19 @@ export default class PokemonsList extends Component {
         visiblePokemonCardsList.push(this.state.filteredPokemonCardsList[i]);
     }
 
-    return visiblePokemonCardsList.map(pokemonCard => {
-      return (
-        <PokemonCard
-          pokemonCard={pokemonCard}
-          onPokemonCardClick={this.props.onPokemonCardClick}
-          key={key + pokemonCard.id}
-        />
-      );
-    });
+    return (
+      <div key={key} className="pokemon-cards-list">
+        {visiblePokemonCardsList.map(pokemonCard => {
+          return (
+            <PokemonCard
+              pokemonCard={pokemonCard}
+              onPokemonCardClick={this.props.onPokemonCardClick}
+              key={pokemonCard.id}
+            />
+          );
+        })}
+      </div>
+    );
   };
 
   renderListFooter = key => {
@@ -331,7 +334,7 @@ export default class PokemonsList extends Component {
 
   render() {
     return (
-      <div className="pokemon-cards-list">
+      <div>
         {[
           //Set Filter feature is broken; will fix it later
           // this.renderSetsFilter(0),
