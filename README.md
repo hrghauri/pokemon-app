@@ -8,9 +8,10 @@ This application allows the user to fetch multiple or single pokemon cards by en
 https://hrghauri.github.io/pokemon-app/
 
 ## Technologies used
--Node 8.15.1
--NPM 6.4.1
--create-react-app
+
+* Node 8.15.1
+* NPM 6.4.1
+* create-react-app
 
 
 
