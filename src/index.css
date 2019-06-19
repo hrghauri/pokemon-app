@@ -12,6 +12,31 @@ code {
     monospace;
 }
 
+.pokemon-app {
+  margin: auto 20px;
+  text-align: center;
+}
+
+.pokemon-search-text-box div {
+  margin: auto;
+  text-align: center;
+}
+
+.pokemon-app h1 {
+  font-weight: 300;
+  text-transform: uppercase;
+}
+
+.bottom-text {
+  position: relative;
+  top: 10px;
+  margin: auto 20px;
+}
+
+.pokemon-cards-list {
+  /* margin: auto 20px; */
+}
+
 .pokemon-Card {
   width: 250px;
 }

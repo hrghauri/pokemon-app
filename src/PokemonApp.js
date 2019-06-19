@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+// import Background from './images/dark-grey-terrazzo.png';
 
 import pokemonService from './services/pokemon';
 
@@ -96,19 +97,25 @@ class PokemonApp extends Component {
 
   renderSearchBox = key => {
     return (
-      <PokemonNameSearchBox
-        key={key}
-        currentSearchPokemonName={this.state.currentSearchPokemonName}
-        isDisabled={this.state.isSearchInProgress}
-        searchPokemon={this.handleSearchPokemon}
-        changePokemonName={this.handleChangePokemonName}
-      />
+      <div className="pokemon-search-text-box" key={key}>
+        <PokemonNameSearchBox
+          key={key}
+          currentSearchPokemonName={this.state.currentSearchPokemonName}
+          isDisabled={this.state.isSearchInProgress}
+          searchPokemon={this.handleSearchPokemon}
+          changePokemonName={this.handleChangePokemonName}
+        />
+      </div>
     );
   };
 
   renderBottom = key => {
     if (this.state.pokemonCards.length === 0)
-      return <div key={key}>Search for your favourite Pokemon</div>;
+      return (
+        <div key={key} className="bottom-text">
+          Search for your favourite Pokemon!
+        </div>
+      );
     else
       return (
         <PokemonsList
@@ -139,6 +146,7 @@ class PokemonApp extends Component {
   render() {
     return (
       <div className="pokemon-app">
+        <h1>Pokemon Search app</h1>
         {[
           this.renderErrorHandlingComponent(1),
           this.renderSearchBox(2),

@@ -301,17 +301,19 @@ export default class PokemonsList extends Component {
     }
 
     return (
-      <Grid container spacing={5} key={key} className="pokemon-cards-list">
-        {visiblePokemonCardsList.map(pokemonCard => {
-          return (
-            <PokemonCard
-              pokemonCard={pokemonCard}
-              onPokemonCardClick={this.props.onPokemonCardClick}
-              key={pokemonCard.id}
-            />
-          );
-        })}
-      </Grid>
+      <div className="pokemon-cards-list" key={key}>
+        <Grid container spacing={2}>
+          {visiblePokemonCardsList.map(pokemonCard => {
+            return (
+              <PokemonCard
+                pokemonCard={pokemonCard}
+                onPokemonCardClick={this.props.onPokemonCardClick}
+                key={pokemonCard.id}
+              />
+            );
+          })}
+        </Grid>
+      </div>
     );
   };
 
