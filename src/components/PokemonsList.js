@@ -85,18 +85,11 @@ export default class PokemonsList extends Component {
         (acc, currentPokemonCard) => {
           const currentPokemonCardTypes = currentPokemonCard.types;
           let match = true;
-          // for (let i = 0; i < currentPokemonCardTypes.length; i++) {
-          //   if (!allAppliedTypeFilters.includes(currentPokemonCardTypes[i])) {
-          //     match = false;
-          //     break;
-          //   }
-          // }
           for (let i = 0; i < allAppliedTypeFilters.length; i++) {
             if (!currentPokemonCardTypes.includes(allAppliedTypeFilters[i])) {
               match = false;
               break;
             }
-            // if (!match) break;
           }
 
           if (match) acc.push(currentPokemonCard);
@@ -170,7 +163,8 @@ export default class PokemonsList extends Component {
 
     this.setState({
       filters,
-      filteredPokemonCardsList: newfilteredPokemonCardsList
+      filteredPokemonCardsList: newfilteredPokemonCardsList,
+      currentPage: 1
     });
   };
 
