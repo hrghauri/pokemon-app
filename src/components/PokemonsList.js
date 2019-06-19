@@ -103,7 +103,6 @@ export default class PokemonsList extends Component {
         },
         []
       );
-      console.log(newfilteredPokemonCardsList.length);
 
       return newfilteredPokemonCardsList;
     }
@@ -143,8 +142,10 @@ export default class PokemonsList extends Component {
       filter,
       this.props.pokemonCards
     );
-    const setsFilterList = this._applySetsFilter(filter, typesFilteredList);
-    return setsFilterList;
+
+    //Set Filter feature is broken; will fix it later
+    // const setsFilterList = this._applySetsFilter(filter, typesFilteredList);
+    return typesFilteredList;
   };
 
   handlePageSelect = pageNum => {
@@ -332,6 +333,7 @@ export default class PokemonsList extends Component {
     return (
       <div className="pokemon-cards-list">
         {[
+          //Set Filter feature is broken; will fix it later
           // this.renderSetsFilter(0),
           this.renderTypesFilter(1),
           this.renderResetFilter(2),
