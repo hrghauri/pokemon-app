@@ -64,7 +64,7 @@ class PokemonApp extends Component {
 
     this.setState({ isSearchInProgress: true }, () => {
       pokemonService
-        .getPokemonCardsByExactName(this.state.currentSearchPokemonName)
+        .getPokemonCardsByName(this.state.currentSearchPokemonName)
         .then(cards => {
           if (cards.length === 0) {
             let error = new Error('No pokemons found by this name.');
