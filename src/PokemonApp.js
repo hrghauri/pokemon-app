@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Background from './images/light-grey-terrazzo.png';
 
 import pokemonService from './services/pokemon';
 
@@ -20,6 +21,7 @@ class PokemonApp extends Component {
       isPopupOpen: false,
       searchedPokemonTimesNegative: 0 // a Hack to  make sure to completely rerender PokemonList once a search is performed again
     };
+    document.body.style = 'background-image:' + `url(${Background})`;
   }
 
   handlePokemonCardOnClick = pokemonCardId => {
