@@ -86,7 +86,12 @@ export default class PokemonsList extends Component {
           const currentPokemonCardTypes = currentPokemonCard.types;
           let match = true;
           for (let i = 0; i < allAppliedTypeFilters.length; i++) {
-            if (!currentPokemonCardTypes.includes(allAppliedTypeFilters[i])) {
+            if (currentPokemonCardTypes) {
+              if (!currentPokemonCardTypes.includes(allAppliedTypeFilters[i])) {
+                match = false;
+                break;
+              }
+            } else {
               match = false;
               break;
             }
