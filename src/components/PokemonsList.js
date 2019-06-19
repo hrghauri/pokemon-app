@@ -67,6 +67,7 @@ export default class PokemonsList extends Component {
 
   _applyTypesFilter = (filter, pokemonCardsList) => {
     const allTypeFilterKeys = Object.keys(filter.typesFilter);
+
     const allAppliedTypeFilters = allTypeFilterKeys.reduce(
       (acc, currentTypeFilterKey) => {
         const currentFilterValue = filter.typesFilter[currentTypeFilterKey];
@@ -84,7 +85,7 @@ export default class PokemonsList extends Component {
         (acc, currentPokemonCard) => {
           const currentPokemonCardTypes = currentPokemonCard.types;
           for (let i = 0; i < currentPokemonCardTypes.length; i++) {
-            if (allAppliedTypeFilters.includes(currentPokemonCardTypes)) {
+            if (allAppliedTypeFilters.includes(currentPokemonCardTypes[i])) {
               acc.push(currentPokemonCard);
               break;
             }
@@ -93,6 +94,7 @@ export default class PokemonsList extends Component {
         },
         []
       );
+
       return newfilteredPokemonCardsList;
     }
   };
@@ -101,7 +103,7 @@ export default class PokemonsList extends Component {
     const allSetFilterKeys = Object.keys(filter.setsFilter);
     const allAppliedSetFilters = allSetFilterKeys.reduce(
       (acc, currentSetFilterKey) => {
-        const currentFilterValue = filter.typesFilter[currentSetFilterKey];
+        const currentFilterValue = filter.setsFilter[currentSetFilterKey];
         if (currentFilterValue === true) {
           acc.push(currentSetFilterKey);
         }
@@ -121,6 +123,7 @@ export default class PokemonsList extends Component {
         },
         []
       );
+      console.log(newfilteredPokemonCardsList);
       return newfilteredPokemonCardsList;
     }
   };
@@ -128,7 +131,7 @@ export default class PokemonsList extends Component {
   _applyFilterAndReturnFilteredList = filter => {
     const typesFilteredList = this._applyTypesFilter(
       filter,
-      this.state.filteredPokemonCardsList
+      this.props.pokemonCards
     );
     const setsFilterList = this._applySetsFilter(filter, typesFilteredList);
     return setsFilterList;
@@ -146,7 +149,7 @@ export default class PokemonsList extends Component {
 
   handleFilter = (filterName, filterType, filterValue) => {
     const filters = this.state.filters;
-    filters[filterName][filterType] = filterValue;
+    filters[filterName + 'sFilter'][filterType] = filterValue;
 
     const newfilteredPokemonCardsList = this._applyFilterAndReturnFilteredList(
       filters
@@ -228,7 +231,7 @@ export default class PokemonsList extends Component {
     const allSetFilterKeys = Object.keys(this.state.filters.setsFilter);
     const allAppliedSetFilters = allSetFilterKeys.reduce(
       (acc, currentSetFilterKey) => {
-        const currentFilterValue = this.state.filters.typesFilter[
+        const currentFilterValue = this.state.filters.setsFilter[
           currentSetFilterKey
         ];
         if (currentFilterValue === true) {
