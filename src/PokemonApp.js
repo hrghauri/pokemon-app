@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-// import Background from './images/dark-grey-terrazzo.png';
 
 import pokemonService from './services/pokemon';
 
@@ -9,16 +8,19 @@ import PokemonsList from './components/PokemonsList';
 import PokemonPopup from './components/PokemonPopup';
 
 class PokemonApp extends Component {
-  state = {
-    pokemonCards: [],
-    isSearchInProgress: false,
-    currentSearchPokemonName: '',
-    hasErrorOccured: false,
-    error: {},
-    currentClickedPokemonCardId: '',
-    isPopupOpen: false,
-    searchedPokemonTimesNegative: 0 // a Hack to  make sure to completely rerender PokemonList once a search is performed again
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      pokemonCards: [],
+      isSearchInProgress: false,
+      currentSearchPokemonName: '',
+      hasErrorOccured: false,
+      error: {},
+      currentClickedPokemonCardId: '',
+      isPopupOpen: false,
+      searchedPokemonTimesNegative: 0 // a Hack to  make sure to completely rerender PokemonList once a search is performed again
+    };
+  }
 
   handlePokemonCardOnClick = pokemonCardId => {
     this.setState({
@@ -60,7 +62,7 @@ class PokemonApp extends Component {
 
     this.setState({ isSearchInProgress: true }, () => {
       pokemonService
-        .getPokemonCardsByName(this.state.currentSearchPokemonName)
+        .getPokemonCardsByExactName(this.state.currentSearchPokemonName)
         .then(cards => {
           if (cards.length === 0) {
             let error = new Error('No pokemons found by this name.');

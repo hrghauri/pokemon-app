@@ -224,7 +224,7 @@ export default class PokemonsList extends Component {
           />
 
           <Button key={key} variant="contained" disabled>
-            Type Filter
+            Types Filter
           </Button>
         </React.Fragment>
       );
@@ -235,7 +235,7 @@ export default class PokemonsList extends Component {
           variant="contained"
           onClick={e => this.handleFilterOpen('type', e)}
         >
-          Type Filter
+          Types Filter
         </Button>
       );
   };
