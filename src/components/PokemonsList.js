@@ -332,7 +332,7 @@ export default class PokemonsList extends Component {
     return (
       <div className="pokemon-cards-list">
         {[
-          this.renderSetsFilter(0),
+          // this.renderSetsFilter(0),
           this.renderTypesFilter(1),
           this.renderResetFilter(2),
           this.renderPokemonCardsList(3),
