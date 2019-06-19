@@ -3,6 +3,7 @@ import PokemonCard from './PokemonCard';
 import ListFooter from './ListFooter';
 import FilteringComponent from './FilteringComponent';
 import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
 
 export default class PokemonsList extends Component {
   constructor(props) {
@@ -300,7 +301,7 @@ export default class PokemonsList extends Component {
     }
 
     return (
-      <div key={key} className="pokemon-cards-list">
+      <Grid container spacing={5} key={key} className="pokemon-cards-list">
         {visiblePokemonCardsList.map(pokemonCard => {
           return (
             <PokemonCard
@@ -310,7 +311,7 @@ export default class PokemonsList extends Component {
             />
           );
         })}
-      </div>
+      </Grid>
     );
   };
 

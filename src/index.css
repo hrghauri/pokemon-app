@@ -12,14 +12,7 @@ code {
     monospace;
 }
 
-.pokemon-cards-list {
-  position: relative;
-  top: 10px;
-  margin: auto 20px;
-}
-
 .pokemon-Card {
-  display: inline-block;
   width: 250px;
 }
 
