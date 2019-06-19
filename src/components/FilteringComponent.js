@@ -23,8 +23,9 @@ export default function FilteringComponent({
   anchorEL
 }) {
   const onCheck = (name, filterType, filterValue) => {
-    console.log('Filtering Component: FilterName, FilterType, FilterValue');
-    console.log(name, filterType, filterValue);
+    console.log('Filtering Component: On Change');
+    // console.log('Filtering Component: FilterName, FilterType, FilterValue');
+    // console.log(name, filterType, filterValue);
     onFilterValueSelection(name, filterType, filterValue);
   };
 

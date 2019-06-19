@@ -84,16 +84,28 @@ export default class PokemonsList extends Component {
       const newfilteredPokemonCardsList = pokemonCardsList.reduce(
         (acc, currentPokemonCard) => {
           const currentPokemonCardTypes = currentPokemonCard.types;
-          for (let i = 0; i < currentPokemonCardTypes.length; i++) {
-            if (allAppliedTypeFilters.includes(currentPokemonCardTypes[i])) {
-              acc.push(currentPokemonCard);
+          let match = true;
+          // for (let i = 0; i < currentPokemonCardTypes.length; i++) {
+          //   if (!allAppliedTypeFilters.includes(currentPokemonCardTypes[i])) {
+          //     match = false;
+          //     break;
+          //   }
+          // }
+          for (let i = 0; i < allAppliedTypeFilters.length; i++) {
+            if (!currentPokemonCardTypes.includes(allAppliedTypeFilters[i])) {
+              match = false;
               break;
             }
+            // if (!match) break;
           }
+
+          if (match) acc.push(currentPokemonCard);
+
           return acc;
         },
         []
       );
+      console.log(newfilteredPokemonCardsList.length);
 
       return newfilteredPokemonCardsList;
     }
@@ -148,6 +160,7 @@ export default class PokemonsList extends Component {
   };
 
   handleFilter = (filterName, filterType, filterValue) => {
+    console.log('PokemonList: handleFilter');
     const filters = this.state.filters;
     filters[filterName + 'sFilter'][filterType] = filterValue;
 
