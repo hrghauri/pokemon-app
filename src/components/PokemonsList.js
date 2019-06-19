@@ -133,7 +133,7 @@ export default class PokemonsList extends Component {
         },
         []
       );
-      console.log(newfilteredPokemonCardsList);
+
       return newfilteredPokemonCardsList;
     }
   };
@@ -347,6 +347,10 @@ export default class PokemonsList extends Component {
           this.renderListFooter(4)
         ]}
       </div>
+      // <div>
+      //   {this.renderListFooter(1)} {this.renderResetFilter(2)}
+      //   {this.renderPokemonCardsList(3)} {this.renderListFooter(4)}
+      // </div>
     );
   }
 }
