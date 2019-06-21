@@ -19,7 +19,13 @@ class PokemonApp extends Component {
       error: {},
       currentClickedPokemonCardId: '',
       isPopupOpen: false,
-      searchedPokemonTimesNegative: 0 // a Hack to  make sure to completely rerender PokemonList once a search is performed again
+      searchedPokemonTimesNegative: 0, // a Hack to  make sure to completely rerender PokemonList once a search is performed again
+      serverPageSize: 0,
+      serverCurrentPage: 1,
+      serverTotalCount: 0,
+      serverCurrentCount: 0,
+      lastPokemonSearched: '',
+      clientMaxPageSize: 8
     };
     document.body.style = 'background-image:' + `url(${Background})`;
   }
@@ -44,39 +50,59 @@ class PokemonApp extends Component {
     });
   };
 
-  handleSearchPokemon = () => {
-    const _handleError = error => {
-      this.setState(
-        {
-          hasErrorOccured: true,
-          error
-        },
-        () => {
-          setTimeout(() => {
-            this.setState({
-              hasErrorOccured: false,
-              error: {}
-            });
-          }, 2500);
-        }
-      );
-    };
+  handleSearchMorePokemons = () => {
+    const nextPage = this.state.serverCurrentPage + 1;
+    pokemonService
+      .getPokemonCardsByName(this.state.currentSearchPokemonName, nextPage)
+      .then(result => {
+        const morePokemonCards = this.state.pokemonCards(result.cards);
+        this.setState({
+          pokemonCards: morePokemonCards,
+          serverCurrentPage: nextPage
+        });
+      });
+  };
 
+  _handleError = error => {
+    this.setState(
+      {
+        hasErrorOccured: true,
+        error
+      },
+      () => {
+        setTimeout(() => {
+          this.setState({
+            hasErrorOccured: false,
+            error: {}
+          });
+        }, 2500);
+      }
+    );
+  };
+
+  handleSearchPokemon = () => {
     this.setState({ isSearchInProgress: true }, () => {
       pokemonService
-        .getPokemonCardsByName(this.state.currentSearchPokemonName)
-        .then(cards => {
-          if (cards.length === 0) {
+        .getPokemonCardsByName(
+          this.state.currentSearchPokemonName,
+          this.state.serverCurrentPage
+        )
+        .then(result => {
+          if (result.cards.length === 0) {
             let error = new Error('No pokemons found by this name.');
-            _handleError(error);
+            this._handleError(error);
           } else {
             this.setState({
-              pokemonCards: cards
+              pokemonCards: result.cards,
+              serverTotalCount: result.serverTotalCount,
+              serverPageSize: result.serverPageSize,
+              serverCurrentCount: result.serverCurrentCount,
+              lastPokemonSearched: this.state.currentSearchPokemonName
             });
           }
         })
         .catch(error => {
-          _handleError(error);
+          this._handleError(error);
         })
         .finally(() => {
           const searchedPokemonTimesNegative =
