@@ -101,7 +101,7 @@ class PokemonApp extends Component {
       }
 
       try {
-        await Promise.all(allPromises.map(promiseFun => promiseFun()));
+        await Promise.all(allPromises.map(promiseFunc => promiseFunc()));
         await _setStateAsync({
           pokemonCards: cards
         });
