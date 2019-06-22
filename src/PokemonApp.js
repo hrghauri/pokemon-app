@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import Background from './images/light-grey-terrazzo.png';
-
 import pokemonService from './services/pokemon';
-
 import ErrorHandlingComponent from './components/ErrorHandlingComponent';
 import PokemonNameSearchBox from './components/PokemonNameSearchBox';
 import PokemonsList from './components/PokemonsList';
@@ -44,7 +42,19 @@ class PokemonApp extends Component {
     });
   };
 
-  handleSearchPokemon = () => {
+  handleSearchPokemon = async () => {
+    const _setStateAsync = updater =>
+      new Promise(resolve => this.setState(updater, resolve));
+
+    const _cleanup = () => {
+      const searchedPokemonTimesNegative =
+        this.state.searchedPokemonTimesNegative - 1; // a Hack
+      this.setState({
+        isSearchInProgress: false,
+        searchedPokemonTimesNegative
+      });
+    };
+
     const _handleError = error => {
       this.setState(
         {
@@ -62,31 +72,54 @@ class PokemonApp extends Component {
       );
     };
 
-    this.setState({ isSearchInProgress: true }, () => {
-      pokemonService
-        .getPokemonCardsByName(this.state.currentSearchPokemonName)
-        .then(cards => {
-          if (cards.length === 0) {
-            let error = new Error('No pokemons found by this name.');
-            _handleError(error);
-          } else {
-            this.setState({
-              pokemonCards: cards
+    await _setStateAsync({ isSearchInProgress: true });
+    const result = await pokemonService.getPokemonCardsByName(
+      this.state.currentSearchPokemonName,
+      1
+    );
+
+    const cards = result.cards;
+    const totalCount = result.totalCount;
+    const currentCount = result.currentCount;
+    const pageSize = result.pageSize;
+
+    if (currentCount < totalCount) {
+      const totalPages = Math.ceil(totalCount / pageSize);
+      const allPromises = [];
+
+      for (let i = 2; i <= totalPages; i++) {
+        allPromises.push(() => {
+          return pokemonService
+            .getPokemonCardsByName(this.state.currentSearchPokemonName, i)
+            .then(result => {
+              const moreCards = result.cards;
+              moreCards.forEach(card => {
+                cards.push(card);
+              });
             });
-          }
-        })
-        .catch(error => {
-          _handleError(error);
-        })
-        .finally(() => {
-          const searchedPokemonTimesNegative =
-            this.state.searchedPokemonTimesNegative - 1; // a Hack
-          this.setState({
-            isSearchInProgress: false,
-            searchedPokemonTimesNegative
-          });
         });
-    });
+      }
+
+      try {
+        await Promise.all(allPromises.map(promiseFun => promiseFun()));
+        await _setStateAsync({
+          pokemonCards: cards
+        });
+      } catch (error) {
+        _handleError(error);
+      }
+      _cleanup();
+    } else {
+      if (cards.length === 0) {
+        let error = new Error('No pokemons found by this name.');
+        _handleError(error);
+      } else {
+        await _setStateAsync({
+          pokemonCards: cards
+        });
+      }
+      _cleanup();
+    }
   };
 
   renderErrorHandlingComponent = key => {
@@ -126,6 +159,7 @@ class PokemonApp extends Component {
           pokemonCards={this.state.pokemonCards}
           onPokemonCardClick={this.handlePokemonCardOnClick}
           key={this.state.searchedPokemonTimesNegative} // a Hack
+          isSearchInProgress={this.state.isSearchInProgress}
         />
       );
   };

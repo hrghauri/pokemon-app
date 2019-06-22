@@ -221,6 +221,7 @@ export default class PokemonsList extends Component {
             onFilterClose={this.handleFilterClose}
             open={true}
             anchorEL={this.state.anchorEL}
+            disabled={this.props.isSearchInProgress}
           />
 
           <Button key={key} variant="contained" disabled>
@@ -234,6 +235,7 @@ export default class PokemonsList extends Component {
           key={key}
           variant="contained"
           onClick={e => this.handleFilterOpen('type', e)}
+          disabled={this.props.isSearchInProgress}
         >
           Types Filter
         </Button>
@@ -278,6 +280,7 @@ export default class PokemonsList extends Component {
           key={key}
           variant="contained"
           onClick={e => this.handleFilterOpen('set', e)}
+          disabled={this.props.isSearchInProgress}
         >
           Set Filter
         </Button>
@@ -331,6 +334,7 @@ export default class PokemonsList extends Component {
         onPageSelect={this.handlePageSelect}
         numOfPages={numOfPages}
         currentPage={currentPage}
+        disabled={this.props.isSearchInProgress}
       />
     );
   };

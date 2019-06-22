@@ -2,7 +2,12 @@ import React from 'react';
 import NativeSelect from '@material-ui/core/NativeSelect';
 import Button from '@material-ui/core/Button';
 
-export default function ListFooter({ numOfPages, currentPage, onPageSelect }) {
+export default function ListFooter({
+  numOfPages,
+  currentPage,
+  onPageSelect,
+  disabled
+}) {
   const renderOtherPageOptions = () => {
     const options = [];
     for (let i = 1; i <= numOfPages; i++) {
@@ -33,31 +38,34 @@ export default function ListFooter({ numOfPages, currentPage, onPageSelect }) {
     onPageSelect(nextPage);
   };
 
-  return (
-    <div>
-      {currentPage !== 1 && (
-        <Button variant="contained" onClick={onPreviousClick}>
-          Previous
-        </Button>
-      )}
-      {currentPage === 1 && (
-        <Button variant="contained" color="secondary" disabled>
-          Previous
-        </Button>
-      )}
-      <NativeSelect value={currentPage} onChange={optionsSelect}>
-        {renderOtherPageOptions()}
-      </NativeSelect>
-      {currentPage !== numOfPages && (
-        <Button variant="contained" onClick={onNextClick}>
-          Next
-        </Button>
-      )}
-      {currentPage === numOfPages && (
-        <Button variant="contained" color="secondary" disabled>
-          Next
-        </Button>
-      )}
-    </div>
-  );
+  if (!disabled)
+    return (
+      <div>
+        {currentPage !== 1 && (
+          <Button variant="contained" onClick={onPreviousClick}>
+            Previous
+          </Button>
+        )}
+        {currentPage === 1 && (
+          <Button variant="contained" color="secondary" disabled>
+            Previous
+          </Button>
+        )}
+        <NativeSelect value={currentPage} onChange={optionsSelect}>
+          {renderOtherPageOptions()}
+        </NativeSelect>
+        {currentPage !== numOfPages && (
+          <Button variant="contained" onClick={onNextClick}>
+            Next
+          </Button>
+        )}
+        {currentPage === numOfPages && (
+          <Button variant="contained" color="secondary" disabled>
+            Next
+          </Button>
+        )}
+      </div>
+    );
+
+  return <div />;
 }
