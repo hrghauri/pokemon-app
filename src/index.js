@@ -3,7 +3,9 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import PokemonApp from './PokemonApp';
 import * as serviceWorker from './serviceWorker';
+import Background from './images/light-grey-terrazzo.png';
 
+document.body.style = 'background-image:' + `url(${Background})`;
 ReactDOM.render(<PokemonApp />, document.getElementById('root'));
 
 // If you want your app to work offline and load faster, you can change

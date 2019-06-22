@@ -27,7 +27,6 @@ class PokemonApp extends Component {
       lastPokemonSearched: '',
       clientMaxPageSize: 8
     };
-    document.body.style = 'background-image:' + `url(${Background})`;
   }
 
   handlePokemonCardOnClick = pokemonCardId => {
@@ -53,12 +52,13 @@ class PokemonApp extends Component {
   handleSearchMorePokemons = () => {
     const nextPage = this.state.serverCurrentPage + 1;
     pokemonService
-      .getPokemonCardsByName(this.state.currentSearchPokemonName, nextPage)
+      .getPokemonCardsByName(this.state.lastPokemonSearched, nextPage)
       .then(result => {
         const morePokemonCards = this.state.pokemonCards(result.cards);
         this.setState({
           pokemonCards: morePokemonCards,
-          serverCurrentPage: nextPage
+          serverCurrentPage: nextPage,
+          currentSearchPokemonName: this.state.lastPokemonSearched
         });
       });
   };
