@@ -155,7 +155,7 @@ class PokemonApp extends Component {
         this.state.currentSearchPokemonName,
         1
       );
-      if (result.cards.length == 0) {
+      if (result.cards.length === 0) {
         let error = new Error('No pokemons found by this name.');
         this._handleError(error);
       } else {
@@ -251,9 +251,13 @@ class PokemonApp extends Component {
 
   renderPopUpIfNeccessary = key => {
     if (this.state.isPopupOpen) {
-      const [currentPokemonCard] = this.state.pokemonCards.filter(
-        pokemonCard => this.state.currentClickedPokemonCardId === pokemonCard.id
-      );
+      for (let i in this.state.pokemonCards) {
+        var currentPokemonCard = this.state.pokemonCards[i].find(
+          pokemonCard =>
+            this.state.currentClickedPokemonCardId === pokemonCard.id
+        );
+        if (currentPokemonCard) break;
+      }
 
       return (
         <PokemonPopup
