@@ -39,7 +39,7 @@ class PokemonApp extends Component {
     const downloadPokemonCardsPromises = [];
 
     serverPages.forEach(serverPage => {
-      if (!this.state.pokemonCards[serverPage])
+      if (!this.state.pokemonCards[serverPage]) {
         downloadPokemonCardsPromises.push(async () => {
           const result = await pokemonService.getPokemonCardsByName(
             this.state.lastPokemonSearched,
@@ -51,6 +51,7 @@ class PokemonApp extends Component {
             pokemonCards: oldPokemonCards
           });
         });
+      }
     });
 
     await Promise.all(
@@ -95,28 +96,26 @@ class PokemonApp extends Component {
   };
 
   _getPokemonCardAddress = clientIndex => {
-    var serverKey = Math.ceil(clientIndex / this.state.serverPageSize);
-    if (serverKey === 0) serverKey = 1;
+    var serverKey = Math.floor(clientIndex / this.state.serverPageSize) + 1;
+
     const offset = clientIndex % this.state.serverPageSize;
 
     return [serverKey, offset];
   };
 
-  _getServerPagesForClientPage = (
-    clientPage,
-    serverPageSize,
-    clientPageSize
-  ) => {
+  _getServerPagesForClientPage = clientPage => {
     const serverPages = [];
 
-    const startingIndexServerInclusive = (clientPage - 1) * clientPageSize + 1;
-    const endingIndexServerInclusive = clientPage * clientPageSize;
+    const startingIndexServerInclusive =
+      (clientPage - 1) * this.state.clientMaxPageSize + 1;
+    const endingIndexServerInclusive =
+      clientPage * this.state.clientMaxPageSize;
 
     const serverPageForStartingIndex = Math.ceil(
-      startingIndexServerInclusive / serverPageSize
+      startingIndexServerInclusive / this.state.serverPageSize
     );
     const serverPageForEndingIndex = Math.ceil(
-      endingIndexServerInclusive / serverPageSize
+      endingIndexServerInclusive / this.state.serverPageSize
     );
 
     if (serverPageForEndingIndex === serverPageForStartingIndex)
