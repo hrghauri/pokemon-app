@@ -1,31 +1,29 @@
 import React, { Component } from 'react';
-import Background from './images/light-grey-terrazzo.png';
-
 import pokemonService from './services/pokemon';
-
 import ErrorHandlingComponent from './components/ErrorHandlingComponent';
 import PokemonNameSearchBox from './components/PokemonNameSearchBox';
 import PokemonsList from './components/PokemonsList';
 import PokemonPopup from './components/PokemonPopup';
+import ListFooter from './components/ListFooter';
 
 class PokemonApp extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      pokemonCards: [],
+      pokemonCards: {},
       isSearchInProgress: false,
       currentSearchPokemonName: '',
+      lastPokemonSearched: '',
       hasErrorOccured: false,
       error: {},
       currentClickedPokemonCardId: '',
       isPopupOpen: false,
       searchedPokemonTimesNegative: 0, // a Hack to  make sure to completely rerender PokemonList once a search is performed again
       serverPageSize: 0,
-      serverCurrentPage: 1,
-      serverTotalCount: 0,
       serverCurrentCount: 0,
-      lastPokemonSearched: '',
-      clientMaxPageSize: 8
+      clientMaxPageSize: 8,
+      clientCurrentPage: 0,
+      clientTotalPages: 0
     };
   }
 
@@ -33,6 +31,33 @@ class PokemonApp extends Component {
     this.setState({
       currentClickedPokemonCardId: pokemonCardId,
       isPopupOpen: true
+    });
+  };
+
+  handleClientPageSelect = async clientPageNum => {
+    const serverPages = this._getServerPagesForClientPage(clientPageNum);
+    const downloadPokemonCardsPromises = [];
+
+    serverPages.forEach(serverPage => {
+      if (!this.state.pokemonCards[serverPage])
+        downloadPokemonCardsPromises.push(async () => {
+          const result = await pokemonService.getPokemonCardsByName(
+            this.state.lastPokemonSearched,
+            serverPage
+          );
+          const oldPokemonCards = this.state.pokemonCards;
+          oldPokemonCards[serverPage] = result.cards;
+          await this._setStateAsync({
+            pokemonCards: oldPokemonCards
+          });
+        });
+    });
+
+    await Promise.all(
+      downloadPokemonCardsPromises.map(promiseFunc => promiseFunc())
+    );
+    await this._setStateAsync({
+      clientCurrentPage: clientPageNum
     });
   };
 
@@ -49,19 +74,8 @@ class PokemonApp extends Component {
     });
   };
 
-  handleSearchMorePokemons = () => {
-    const nextPage = this.state.serverCurrentPage + 1;
-    pokemonService
-      .getPokemonCardsByName(this.state.lastPokemonSearched, nextPage)
-      .then(result => {
-        const morePokemonCards = this.state.pokemonCards(result.cards);
-        this.setState({
-          pokemonCards: morePokemonCards,
-          serverCurrentPage: nextPage,
-          currentSearchPokemonName: this.state.lastPokemonSearched
-        });
-      });
-  };
+  _setStateAsync = updater =>
+    new Promise(resolve => this.setState(updater, resolve));
 
   _handleError = error => {
     this.setState(
@@ -80,38 +94,93 @@ class PokemonApp extends Component {
     );
   };
 
-  handleSearchPokemon = () => {
-    this.setState({ isSearchInProgress: true }, () => {
-      pokemonService
-        .getPokemonCardsByName(
-          this.state.currentSearchPokemonName,
-          this.state.serverCurrentPage
-        )
-        .then(result => {
-          if (result.cards.length === 0) {
-            let error = new Error('No pokemons found by this name.');
-            this._handleError(error);
-          } else {
-            this.setState({
-              pokemonCards: result.cards,
-              serverTotalCount: result.serverTotalCount,
-              serverPageSize: result.serverPageSize,
-              serverCurrentCount: result.serverCurrentCount,
-              lastPokemonSearched: this.state.currentSearchPokemonName
-            });
-          }
-        })
-        .catch(error => {
-          this._handleError(error);
-        })
-        .finally(() => {
-          const searchedPokemonTimesNegative =
-            this.state.searchedPokemonTimesNegative - 1; // a Hack
-          this.setState({
-            isSearchInProgress: false,
-            searchedPokemonTimesNegative
-          });
+  _getPokemonCardAddress = clientIndex => {
+    var serverKey = Math.ceil(clientIndex / this.state.serverPageSize);
+    if (serverKey === 0) serverKey = 1;
+    const offset = clientIndex % this.state.serverPageSize;
+
+    return [serverKey, offset];
+  };
+
+  _getServerPagesForClientPage = (
+    clientPage,
+    serverPageSize,
+    clientPageSize
+  ) => {
+    const serverPages = [];
+
+    const startingIndexServerInclusive = (clientPage - 1) * clientPageSize + 1;
+    const endingIndexServerInclusive = clientPage * clientPageSize;
+
+    const serverPageForStartingIndex = Math.ceil(
+      startingIndexServerInclusive / serverPageSize
+    );
+    const serverPageForEndingIndex = Math.ceil(
+      endingIndexServerInclusive / serverPageSize
+    );
+
+    if (serverPageForEndingIndex === serverPageForStartingIndex)
+      serverPages.push(serverPageForEndingIndex);
+    else
+      for (
+        let i = serverPageForStartingIndex;
+        i <= serverPageForEndingIndex;
+        i++
+      ) {
+        serverPages.push(i);
+      }
+
+    return serverPages;
+  };
+
+  getPokemonCardsByServerPage = async page => {
+    const result = await pokemonService.getPokemonCardsByName(
+      this.state.lastPokemonSearched,
+      page
+    );
+    return result.cards;
+  };
+
+  _getNumberOfClientPages = dataLength => {
+    const remainder = dataLength % this.state.clientMaxPageSize;
+    const quotient = Math.floor(dataLength / this.state.clientMaxPageSize);
+
+    if (remainder === 0) return quotient;
+    else return quotient + 1;
+  };
+
+  handleSearchPokemon = async () => {
+    await this._setStateAsync({ isSearchInProgress: true });
+    try {
+      const result = await pokemonService.getPokemonCardsByName(
+        this.state.currentSearchPokemonName,
+        1
+      );
+      if (result.cards.length == 0) {
+        let error = new Error('No pokemons found by this name.');
+        this._handleError(error);
+      } else {
+        const clientTotalPages = this._getNumberOfClientPages(
+          result.totalCount
+        );
+
+        await this._setStateAsync({
+          pokemonCards: { '1': result.cards },
+          serverPageSize: result.pageSize,
+          serverCurrentCount: result.currentCount,
+          lastPokemonSearched: this.state.currentSearchPokemonName,
+          clientCurrentPage: 1,
+          clientTotalPages
         });
+      }
+    } catch (error) {
+      this._handleError(error);
+    }
+    const searchedPokemonTimesNegative =
+      this.state.searchedPokemonTimesNegative - 1; // a Hack
+    await this._setStateAsync({
+      isSearchInProgress: false,
+      searchedPokemonTimesNegative
     });
   };
 
@@ -140,20 +209,47 @@ class PokemonApp extends Component {
   };
 
   renderBottom = key => {
-    if (this.state.pokemonCards.length === 0)
+    if (Object.keys(this.state.pokemonCards).length === 0)
       return (
         <div key={key} className="bottom-text">
           Search for your favourite Pokemon!
         </div>
       );
-    else
+    else {
+      const visiblePokemonCardsList = [];
+      const startingIndexInclusive =
+        (this.state.clientCurrentPage - 1) * this.state.clientMaxPageSize;
+      const endingIndexInclusive =
+        this.state.clientCurrentPage * this.state.clientMaxPageSize - 1;
+
+      for (let i = startingIndexInclusive; i <= endingIndexInclusive; i++) {
+        const clientAddress = this._getPokemonCardAddress(i);
+
+        if (
+          this.state.pokemonCards[clientAddress[0]] &&
+          this.state.pokemonCards[clientAddress[0]][clientAddress[1]]
+        )
+          visiblePokemonCardsList.push(
+            this.state.pokemonCards[clientAddress[0]][clientAddress[1]]
+          );
+      }
+
+      //this.state.pokemonCards[this.state.clientCurrentPage]
+
       return (
-        <PokemonsList
-          pokemonCards={this.state.pokemonCards}
-          onPokemonCardClick={this.handlePokemonCardOnClick}
-          key={this.state.searchedPokemonTimesNegative} // a Hack
-        />
+        <div key={this.state.searchedPokemonTimesNegative}>
+          <PokemonsList
+            pokemonCards={visiblePokemonCardsList}
+            onPokemonCardClick={this.handlePokemonCardOnClick}
+          />
+          <ListFooter
+            onPageSelect={this.handleClientPageSelect}
+            numOfPages={this.state.clientTotalPages}
+            currentPage={this.state.clientCurrentPage}
+          />
+        </div>
       );
+    }
   };
 
   renderPopUpIfNeccessary = key => {
