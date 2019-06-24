@@ -96,7 +96,7 @@ class PokemonApp extends Component {
   };
 
   _getPokemonCardAddress = clientIndex => {
-    var serverKey = Math.floor(clientIndex / this.state.serverPageSize) + 1;
+    const serverKey = Math.floor(clientIndex / this.state.serverPageSize) + 1;
 
     const offset = clientIndex % this.state.serverPageSize;
 
@@ -232,8 +232,6 @@ class PokemonApp extends Component {
             this.state.pokemonCards[clientAddress[0]][clientAddress[1]]
           );
       }
-
-      //this.state.pokemonCards[this.state.clientCurrentPage]
 
       return (
         <div key={this.state.searchedPokemonTimesNegative}>
