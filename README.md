@@ -5,7 +5,7 @@ This application allows the user to fetch multiple or single pokemon cards by en
 
 For e.g if you search "pikachu", you will get all the results of pikachu pokemon. Then, you can apply filters  by specifying the type. Accordingly, page numbers at the bottom are also updated. 
 
-This code written in React, talks to a public back end api https://api.pokemontcg.io/v1/.
+This code written in React, talks to a public back end api available at https://pokemontcg.io/.
 
 Pokemon.js file inside src/services does contains an api endpoint that can return the pokemon cards with exact matches. To use this, just change the service call from 'getPokemonCardsByName' to 'getPokemonCardsByExactName' on line 67 of PokemonApp.js inside src.
 
