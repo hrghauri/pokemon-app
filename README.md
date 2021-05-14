@@ -3,8 +3,9 @@
 ## About and Some Preferences
 This application allows the user to fetch multiple or single pokemon cards by entering the pokemon's name. The name can be an exact match or a partial match. After the initial search, results can further be filtered based on pokemons types. 
 
-For e.g if you search "pikachu", you will get all the results of pikachu pokemon. Then, you can apply filters on by specifying the type. Accordingly, page numbers at the bottom are also updated. 
+For e.g if you search "pikachu", you will get all the results of pikachu pokemon. Then, you can apply filters  by specifying the type. Accordingly, page numbers at the bottom are also updated. 
 
+This code written in React, talks to a public back end api https://api.pokemontcg.io/v1/.
 
 Pokemon.js file inside src/services does contains an api endpoint that can return the pokemon cards with exact matches. To use this, just change the service call from 'getPokemonCardsByName' to 'getPokemonCardsByExactName' on line 67 of PokemonApp.js inside src.
 
